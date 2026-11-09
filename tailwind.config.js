@@ -4,30 +4,40 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Core palette
+        midnight: '#080B12',
+        charcoal: '#171D2B',
+        'ice-blue': '#60A5FA',
+        'royal-blue': '#2563EB',
+        'off-white': '#F8FAFC',
+
+        // Semantic navy mapping anchored to Midnight (#080B12), Charcoal (#171D2B) & Off-white (#F8FAFC)
         navy: {
-          50: '#f0f4f9',
-          100: '#d9e2ef',
-          200: '#b3c6df',
-          300: '#7d9fc6',
-          400: '#4a78ad',
-          500: '#2d5a8f',
-          600: '#1f4374',
-          700: '#1a3a66',
-          800: '#152e52',
-          900: '#102342',
-          950: '#0a1a35',
+          50: '#F8FAFC',    // Off-white
+          100: '#e2e8f0',   // Light border
+          200: '#cbd5e1',   // Slate border
+          300: '#94a3b8',   // Muted slate text
+          400: '#64748b',   // Body slate text
+          500: '#334155',   // Medium charcoal
+          600: '#1e293b',   // Dark charcoal
+          700: '#171D2B',   // Charcoal core (#171D2B)
+          800: '#0f1422',   // Deep charcoal
+          900: '#080B12',   // Midnight core (#080B12)
+          950: '#05070c',   // Deepest midnight
         },
+
+        // Semantic gold/accent mapping anchored to Royal Blue (#2563EB) & Ice Blue (#60A5FA)
         gold: {
-          50: '#fdfaf3',
-          100: '#f9f0db',
-          200: '#f0dfa8',
-          300: '#e6c96e',
-          400: '#d9b34a',
-          500: '#c49a2d',
-          600: '#a67d22',
-          700: '#83611e',
-          800: '#6b4e1f',
-          900: '#5b421f',
+          50: '#eff6ff',    // Soft ice blue tint
+          100: '#dbeafe',   // Ice blue tint
+          200: '#bfdbfe',   // Light ice blue
+          300: '#93c5fd',   // Bright ice blue
+          400: '#60A5FA',   // Ice blue core (#60A5FA)
+          500: '#3b82f6',   // Vibrant blue
+          600: '#2563EB',   // Royal blue core (#2563EB)
+          700: '#1d4ed8',   // Royal blue hover
+          800: '#1e40af',   // Deep royal blue
+          900: '#1e3a8a',   // Navy blue
         },
       },
       fontFamily: {

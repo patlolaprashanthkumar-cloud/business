@@ -47,7 +47,7 @@ export function ServicesPage() {
                 }`}
               >
                 <div className="lg:col-span-1">
-                  <div className="w-14 h-14 bg-navy-700 rounded-xl flex items-center justify-center mb-4">
+                  <div className="w-14 h-14 flex items-center justify-center mb-4">
                     <Icon name={s.iconName} className="w-7 h-7 text-gold-400" />
                   </div>
                   <h2 className="font-serif text-xl font-bold text-navy-900 mb-3">{s.title}</h2>
@@ -58,7 +58,7 @@ export function ServicesPage() {
                     <Icon name="ArrowRight" className="w-3.5 h-3.5" />
                   </Link>
                 </div>
-                <div className="lg:col-span-2">
+                <div className="lg:col-span-2 lg:pt-[72px]">
                   <h3 className="text-sm font-semibold text-navy-700 uppercase tracking-wider mb-4">Key Deliverables</h3>
                   <div className="grid sm:grid-cols-2 gap-2">
                     {s.deliverables.map((d) => (

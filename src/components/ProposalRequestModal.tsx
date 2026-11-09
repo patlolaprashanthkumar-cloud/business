@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react';
 import { Icon } from '@/components/Icon';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { sendFormEmail } from '@/lib/email';
+import { SITE } from '@/lib/constants';
 
 type Status = 'idle' | 'submitting' | 'success' | 'error';
 
@@ -33,19 +35,31 @@ export function ProposalRequestModal({
 
     setStatus('submitting');
     try {
+      await sendFormEmail({
+        formName: 'Custom Proposal Request',
+        subject: `Proposal Request: ${packageName} - ${data.name} (${SITE.brandName})`,
+        replyTo: data.email,
+        data: {
+          'Package Requested': packageName,
+          'Full Name': data.name,
+          'Email Address': data.email,
+          'Phone Number': data.phone,
+          'Company': data.company || 'Not provided',
+          'Requirements / Message': data.message || 'None',
+        },
+      });
+
       if (isSupabaseConfigured && supabase) {
-        const { error } = await supabase.from('proposal_requests').insert({
+        await supabase.from('proposal_requests').insert({
           name: data.name,
           email: data.email,
           phone: data.phone,
           company: data.company || null,
           package_name: packageName,
           message: data.message || null,
-        });
-        if (error) throw error;
-      } else {
-        await new Promise((r) => setTimeout(r, 800));
+        }).catch(() => {});
       }
+
       setStatus('success');
     } catch {
       setStatus('error');
@@ -85,12 +99,6 @@ export function ProposalRequestModal({
                 <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
                   <Icon name="AlertCircle" className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
                   <p className="text-sm text-red-700">Something went wrong. Please try again.</p>
-                </div>
-              )}
-              {!isSupabaseConfigured && (
-                <div className="mb-4 p-3 bg-gold-50 border border-gold-200 rounded-lg flex items-start gap-2">
-                  <Icon name="AlertCircle" className="w-4 h-4 text-gold-700 shrink-0 mt-0.5" />
-                  <p className="text-xs text-gold-800">Demo mode: requests are not yet saved. Please contact us directly.</p>
                 </div>
               )}
               <form onSubmit={handleSubmit} noValidate>

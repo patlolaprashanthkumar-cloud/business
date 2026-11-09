@@ -2,6 +2,8 @@ import { useState, type FormEvent } from 'react';
 import { Icon } from '@/components/Icon';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { useRouter } from '@/lib/router';
+import { sendFormEmail } from '@/lib/email';
+import { SITE } from '@/lib/constants';
 
 type Status = 'idle' | 'submitting' | 'success' | 'error';
 
@@ -95,8 +97,30 @@ export function AssessmentForm() {
     if (!validateStep(3)) return;
     setStatus('submitting');
     try {
+      await sendFormEmail({
+        formName: 'Business Assessment Request',
+        subject: `New Business Assessment: ${data.full_name} (${data.company_name || data.industry}) - ${SITE.brandName}`,
+        replyTo: data.email,
+        data: {
+          'Full Name': data.full_name,
+          'Company Name': data.company_name || 'Not provided',
+          'Email Address': data.email,
+          'Phone Number': data.phone,
+          'City / State': data.city_state,
+          'Industry': data.industry,
+          'Business Stage': data.business_stage,
+          'Annual Turnover': data.turnover_range,
+          'Employee Count': data.employee_count,
+          'Primary Challenge': data.primary_challenge,
+          'Services Required': services.join(', '),
+          'Preferred Contact Time': data.preferred_contact_time || 'Flexible',
+          'Additional Information': data.additional_info || 'None',
+          'Consent Provided': 'Yes',
+        },
+      });
+
       if (isSupabaseConfigured && supabase) {
-        const { error } = await supabase.from('assessment_requests').insert({
+        await supabase.from('assessment_requests').insert({
           full_name: data.full_name,
           company_name: data.company_name || null,
           email: data.email,
@@ -111,11 +135,9 @@ export function AssessmentForm() {
           preferred_contact_time: data.preferred_contact_time || null,
           additional_info: data.additional_info || null,
           consent: true,
-        });
-        if (error) throw error;
-      } else {
-        await new Promise((r) => setTimeout(r, 800));
+        }).catch(() => {});
       }
+
       setStatus('success');
     } catch {
       setStatus('error');
@@ -183,14 +205,6 @@ export function AssessmentForm() {
             <Icon name="AlertCircle" className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
             <p className="text-sm text-red-700">
               Something went wrong while submitting. Please try again or contact us directly.
-            </p>
-          </div>
-        )}
-        {!isSupabaseConfigured && (
-          <div className="mb-6 p-3 bg-gold-50 border border-gold-200 rounded-lg flex items-start gap-2">
-            <Icon name="AlertCircle" className="w-4 h-4 text-gold-700 shrink-0 mt-0.5" />
-            <p className="text-xs text-gold-800">
-              Demo mode: submissions are not yet saved. Please contact us directly via phone or email.
             </p>
           </div>
         )}

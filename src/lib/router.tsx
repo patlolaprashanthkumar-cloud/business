@@ -14,6 +14,11 @@ export function useRouter() {
   return useContext(RouterContext);
 }
 
+export function useNavigate() {
+  const { navigate } = useRouter();
+  return navigate;
+}
+
 export function RouterProvider({ children }: { children: ReactNode }) {
   const [path, setPath] = useState(() => {
     if (typeof window !== 'undefined') {

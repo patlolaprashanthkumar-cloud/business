@@ -29,7 +29,7 @@ export function AssessmentPage() {
               { icon: 'Target', title: 'Actionable Discussion', desc: 'A focused first meeting based on your specific needs.' },
             ].map((item) => (
               <div key={item.title} className="bg-white rounded-xl p-6 border border-navy-100 shadow-sm text-center">
-                <div className="w-12 h-12 bg-gold-50 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <div className="w-12 h-12 flex items-center justify-center mx-auto mb-3">
                   <Icon name={item.icon} className="w-6 h-6 text-gold-600" />
                 </div>
                 <h3 className="font-semibold text-navy-900 text-sm mb-1">{item.title}</h3>

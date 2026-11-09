@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react';
 import { Icon } from '@/components/Icon';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { sendFormEmail } from '@/lib/email';
+import { SITE } from '@/lib/constants';
 
 type Status = 'idle' | 'submitting' | 'success' | 'error';
 
@@ -29,8 +31,24 @@ export function ConsultationForm() {
 
     setStatus('submitting');
     try {
+      await sendFormEmail({
+        formName: 'Consultation Request',
+        subject: `New Consultation Request: ${data.name} (${data.topic}) - ${SITE.brandName}`,
+        replyTo: data.email,
+        data: {
+          'Full Name': data.name,
+          'Email Address': data.email,
+          'Phone Number': data.phone,
+          'Company': data.company || 'Not provided',
+          'Preferred Date': data.preferred_date || 'Flexible',
+          'Preferred Time': data.preferred_time || 'Flexible',
+          'Consultation Topic': data.topic,
+          'Additional Information': data.message || 'None',
+        },
+      });
+
       if (isSupabaseConfigured && supabase) {
-        const { error } = await supabase.from('consultation_requests').insert({
+        await supabase.from('consultation_requests').insert({
           name: data.name,
           email: data.email,
           phone: data.phone,
@@ -39,11 +57,9 @@ export function ConsultationForm() {
           preferred_time: data.preferred_time || null,
           topic: data.topic,
           message: data.message || null,
-        });
-        if (error) throw error;
-      } else {
-        await new Promise((r) => setTimeout(r, 800));
+        }).catch(() => {});
       }
+
       setStatus('success');
       (e.target as HTMLFormElement).reset();
     } catch {
@@ -75,14 +91,6 @@ export function ConsultationForm() {
           <Icon name="AlertCircle" className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
           <p className="text-sm text-red-700">
             Something went wrong while submitting your request. Please try again or contact us directly by phone or email.
-          </p>
-        </div>
-      )}
-      {!isSupabaseConfigured && (
-        <div className="mb-6 p-3 bg-gold-50 border border-gold-200 rounded-lg flex items-start gap-2">
-          <Icon name="AlertCircle" className="w-4 h-4 text-gold-700 shrink-0 mt-0.5" />
-          <p className="text-xs text-gold-800">
-            Demo mode: form submissions are not yet saved to a backend. Please contact us directly via phone or email.
           </p>
         </div>
       )}

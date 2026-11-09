@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react';
 import { Icon } from '@/components/Icon';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { sendFormEmail } from '@/lib/email';
+import { SITE } from '@/lib/constants';
 
 type Status = 'idle' | 'submitting' | 'success' | 'error';
 
@@ -27,18 +29,29 @@ export function ContactForm() {
 
     setStatus('submitting');
     try {
+      await sendFormEmail({
+        formName: 'Contact Us',
+        subject: `New Contact Inquiry: ${data.subject || data.name} - ${SITE.brandName}`,
+        replyTo: data.email,
+        data: {
+          'Full Name': data.name,
+          'Email Address': data.email,
+          'Phone Number': data.phone || 'Not provided',
+          'Subject': data.subject || 'General Inquiry',
+          'Message': data.message,
+        },
+      });
+
       if (isSupabaseConfigured && supabase) {
-        const { error } = await supabase.from('contact_messages').insert({
+        await supabase.from('contact_messages').insert({
           name: data.name,
           email: data.email,
           phone: data.phone || null,
           subject: data.subject || null,
           message: data.message,
-        });
-        if (error) throw error;
-      } else {
-        await new Promise((r) => setTimeout(r, 800));
+        }).catch(() => {});
       }
+
       setStatus('success');
       (e.target as HTMLFormElement).reset();
     } catch {
@@ -65,12 +78,6 @@ export function ContactForm() {
         <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
           <Icon name="AlertCircle" className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
           <p className="text-sm text-red-700">Something went wrong. Please try again or contact us directly.</p>
-        </div>
-      )}
-      {!isSupabaseConfigured && (
-        <div className="mb-6 p-3 bg-gold-50 border border-gold-200 rounded-lg flex items-start gap-2">
-          <Icon name="AlertCircle" className="w-4 h-4 text-gold-700 shrink-0 mt-0.5" />
-          <p className="text-xs text-gold-800">Demo mode: messages are not yet saved. Please contact us directly via phone or email.</p>
         </div>
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

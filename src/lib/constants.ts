@@ -13,3 +13,8 @@ export const SITE = {
 
 export const WHATSAPP_URL =
   'https://wa.me/919390168733?text=Hello%2C%20I%20would%20like%20to%20discuss%20business%20consulting%20services%20for%20my%20company.';
+
+export const FORMS_CONFIG = {
+  accessKey: '5c828f7d-5e23-44e1-8c1e-14cc57e9c183',
+  designatedEmail: 'chairman@e-tailedindia.com',
+};
